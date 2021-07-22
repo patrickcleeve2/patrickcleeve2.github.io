@@ -4,6 +4,6 @@ Self driving cars need to understand the world around them, in order to navigate
 
 ## Problem
 
-![Sequence 0](tracking/seq0.gif)
+![Sequence 0](img/seq0.gif)
 
-![Sequence 1](tracking/seq1.gif)
+![Sequence 1](img/seq1.gif)

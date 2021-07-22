@@ -4,5 +4,5 @@ hello
 
 [link_test](page.md)
 
-[tracking](tracking.md)
+[tracking](tracking/tracking.md)
 
