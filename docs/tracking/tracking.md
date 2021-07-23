@@ -185,6 +185,40 @@ In general, the faster the model, the lower the accuracy. We can see this patter
 ![ResNet](img/resnet.gif)
 
 
+### Evaluating Tradeoffs
+Overall, we are trying to balance speed and accuracy. Faster speed gives us a smoother tracker, and less uncertainty about our predictions, whereas higher accuracy gives us more certainty about our detections. We can think about this as having more recent information or having more accurate information. 
+
+There is certainly a minimum level of accuracy required for a tracker to function effectively, but additional accuracy isn’t as valuable due to the persistent nature of the tracked objects. If a detection is missed in one frame, it can be recovered in the next. However, faster tracking is always valuable. 
+
+For real time tracking, a simple, fast tracker usually wins over a slower more sophisticated method. For a more detailed discussion, see [SORT](https://arxiv.org/abs/1602.00763).
+
+## Limitations
+The limitations of applying this demo to self-driving cars directly are as follows:
+
+We have used a single class tracker, with only a single class in our images (pedestrians). In order to incorporate this into a self-driving car, we would need to make our tracker multi-class, which would make it slightly more complex.
+
+Our detections and tracks are only in 2D (image bounding boxes). In order to incorporate these tracks into a planning system, we would need to convert them to 3-dimensions. Tracking in 3D is not that much more complicated than 2D, as we just add z-values to our bounding boxes. However, getting fast, and accurate 3D detections is much more challenging.
+
+The 'fast' detection model we have used is actually pretty slow, as it is a two-stage detector. If we were to change to a single stage detector designed for speed such as YOLO, or SSD, we might be able to use a more complex tracker and still maintain our 20 FPS benchmark.
+
+In the example scenes, we used a stationary camera. In the real world, the car would be moving which would change how the pedestrians and camera are moving relative to one another. Depending on how fast the car is moving, this can complicate our tracking significantly.
+
+![Moving Camera](img/move.gif)
+
+Tracking is only one of the first steps for the whole self-driving pipeline. From these tracks we need to predict what the pedestrians and other cars are going to do, and then plan our path through them. 
+
+We ignored most of the appearance based metrics for tracking.
+
+![Optical Flow Seq 1](img/optflow_seq1.gif)
+ 
+We didn't use any deep learning in our tracking. If we use deep learning everything automatically gets better. This is only 50% a joke, [DeepSORT](https://github.com/nwojke/deep_sort).
+
+We skipped over tuning any of the other parameters of the tracker, in favour of discussing the speed. There are many hyperparameters that we can adjust in order to improve not only the tracker, but the detections as well. 
+
+## Conclusion
+Tracking is a useful technique for determining the behaviour of other agents on the road. For self driving applications, a robust, real time tracking pipeline is required. We’ve seen that for real time problems, faster, simpler tracking can work better than slower more complex methods.  Tracking is a building block for a prediction system, in order to understand what pedestrians and vehicles will do next.  
+
+
 
 ## Reference
 **Detection**
