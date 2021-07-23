@@ -23,15 +23,20 @@ For this post, we are going to use a couple of small example scenes of pedestria
 
 |![Sequence 1](img/seq1.gif)|
 | :--: |
-|*Sequence 0*|
+|*Sequence 2*|
 
 To motivate the need for tracking, lets see the output of the object detector.
 
-![ResNet Seq0](img/seq0_resnet.gif)
+|![ResNet Seq0](img/seq0_resnet.gif)|
+|:--:|
+|*Sequence 1 Detections*|
+
 
 In the first clip, as the pedestrian goes behind the pole, the detector loses them. 
 
-![ResNet Seq0](img/seq1_resnet.gif)
+|![ResNet Seq0](img/seq1_resnet.gif)|
+|:--:|
+|*Sequence 2 Detections*|
 
 In the second clip, as the pedestrians get close together the detections become confused by the overlapping, and we again lose a detection. 
 
@@ -52,7 +57,9 @@ Specifically for self-driving, we are interested in multi-object, multi-class, o
 
 In this post, we are going to be talking about tracking by detection. Using this method, we use a detector to detect objects, and then run a tracker on the detection output.  There are other methods for tracking (e.g. [optical flow](https://en.wikipedia.org/wiki/Optical_flow)) for different applications.
 
-![Optical Flow Seq0](img/optflow_seq0.gif)
+|![Optical Flow Seq0](img/optflow_seq0.gif)|
+|:--:|
+|*Optical Flow Example*|
 
 ## Methods
 
@@ -73,13 +80,17 @@ There are a number of different ways to calculate whether two objects are “clo
 
 The euclidean distance (straight line distance), between the centre of each detection provides a simple way for measuring distance. The distance is measured from the centre point of each bounding box. Euclidean distance is a useful metric as it is fast to calculate, and scales easily to 3-dimensional objects.
 
-![Euclidean Distance](img/euclidean_distance.png)
+|![Euclidean Distance](img/euclidean_distance.png)|
+|:--:|
+|*Euclidean Distance*|
 
 *Intersection over Union (IoU)*
 
 The IoU method evaluates how much the bounding boxes overlap compared to their overall size. The greater proportion of the bouncing box that overlaps, the higher the IoU score. For bounding boxes that don’t overlap, the IoU is zero, regardless of how close or far away they are. 
 
-![IoU](img/iou.png)
+|![IoU](img/iou.png)|
+|:--:|
+|*Intersection over Union*|
 
 #### **Appearance**
 
@@ -91,14 +102,18 @@ The simplest way to compare object appearances is to evaluate the size of the bo
 
 For two different detections we can calculate how ‘similar’ the images inside the bounding boxes are. The assumption is that the same object will appear similar in subsequent frames, when compared to other detected objects. There are a number of methods for calculated similarity, ranging from colour, feature or template matching, to more sophisticated CNN methods.  An example of image similarity in action is  Google’s reverse image search. The downside of these methods is that they can be computationally expensive (take a long time), which can have large downsides for real time tracking.
 
-![Image Similarity](img/similarity.png)
+|![Image Similarity](img/similarity.png)|
+|:--:|
+|*Image Similarity*|
 
 #### **Motion**
 *Constant velocity model*
 
 Once an object is successfully tracked, we can calculate it’s motion and use it to predict where it will be detected next. This simplest method is to assume the object travels at a constant velocity, and use that to predict where the next detection will occur. 
 
-![Motion Model](img/motion_model.gif)
+|![Motion Model](img/motion_model.gif)|
+|:--:|
+|*Motion Model*|
 
 *Kalman Filter*
 
@@ -124,7 +139,10 @@ Example Cost Matrix
 #### **Association**
 Once the cost matrix is constructed, we need to find the best way to match detections and tracks to minimise the overall score. The most common method is to use an [optimisation method](https://en.wikipedia.org/wiki/Hungarian_algorithm#the_problem), to solve the problem. Once the association is complete, each detection is matched to a track, creates a new track, or is discarded, and our tracking algorithm is ready to process the next frame. 
 
-![Association](img/association.gif)
+|![Association](img/association.gif)
+|
+|:--:|
+|*Association Problem*|
 
 ## Tracking Example
 Now that we have an understanding of how tracking algorithms work, we can see how tracking works in practice.  
@@ -133,9 +151,13 @@ I will be using the [motpy](https://github.com/wmuron/motpy) package for trackin
 
 The following examples are done in real time using the default tracking parameters.
 
-![FPS 10 Track 0](img/fps10_track0.gif)
+|![FPS 10 Track 0](img/fps10_track0.gif)|
+|:--:|
+|*10 FPS Tracking Sequence 1*|
 
-![FPS10 Track 1](img/fps10_track1.gif)
+|![FPS10 Track 1](img/fps10_track1.gif)|
+|:--:|
+|*10 FPS Tracking Sequence 2*|
 
 We can see the benefit tracking brings, we are able to track the individual pedestrians even when they are occluded behind a pole, or each other. However, there are clearly some phantom tracks going on. In sequence one, after the person appears from behind the pole, two detections are shown. This is likely due to the tracker not registering the new detections and the previous track, and creating a new one instead without deregistering the old.
 
@@ -162,33 +184,54 @@ In order to run our tracker faster, we need to understand what the bottleneck is
 - Publishing: Publishing the image back into the image stream
 The Drawing and Publishing steps are just for viewing the demo, so we will ignore them. 
 
-![Tracking Pipeline](img/tracking_pipeline.png)
+|![Tracking Pipeline](img/tracking_pipeline.png)|
+|:--:|
+|*Tracking Pipeline*|
 
 From the chart below, we can see that the pipeline time is dominated by the model’s inference, with tracking being a very small proportion of the overall. Therefore, if we want to improve our tracking speed we need to run a faster model.   
 
-![Resnet Pipeline](img/resnet_pipeline.png)
+|![Resnet Pipeline](img/resnet_pipeline.png)|
+|:--:|
+|*ResNet Tracking Pipeline*|
 
 The initial detection model used had a ResNet backbone, which is an accurate but slower model. We can replace it with a mobilenet backbone, which is a model designed for mobile phones, so it is much faster, at the cost of some accuracy. From the chart below, we can see that this change alone almost doubles our speed. We have gone from processing at 10 fps (1 / 0.1) to around 20 fps (1 / 0.05) for tracking.
 
-![Models Pipeline](img/models_pipeline.png)
-*Model Comparison*
+|![Models Pipeline](img/models_pipeline.png)|
+|:--:|
+|*Model Comparison*|
+
 
 To get an intuitive understanding of how big a difference in speed this is, I am displaying the last five detections for each model. We can see how much closer together and tighter around the person the detections at 20 FPS are. For tracking, this means our tracker has less distance between detections, and has less uncertainty regarding prediction.
 
-![FPS10 Detections](img/fps10_det.gif)
-![FPS20 Detections](img/fps20_det.gif)
+|![FPS10 Detections](img/fps10_det.gif)|
+|:--:|
+|*10 FPS Sequence 1 Detections*|
+
+|![FPS20 Detections](img/fps20_det.gif)|
+|:--:|
+|*10 FPS Sequence 2 Detections*|
 
 Now when we run our tracker at 20 FPS, without changing any other parameters, we get  a noticeable improvement in performance. 
 
-![FPS20 Track 0](img/fps20_track0.gif)
-![FPS20 Track 1](img/fps20_track1.gif)
+|![FPS20 Track 0](img/fps20_track0.gif)|
+|:--:|
+|*20 FPS Tracking Sequence 1*|
+
+|![FPS20 Track 1](img/fps20_track1.gif)|
+|:--:|
+|*20 FPS Tracking Sequence 2*|
 
 There are still some obvious issues with the tracker (e.g. phantom tracks), but we have managed to improve the smoothness overall. However, there are some downsides to using a faster inference model that we need to discuss.
 
 In general, the faster the model, the lower the accuracy. We can see this pattern in the sequences below. The mobilnet model misses a lot more detections than the resnet model. This is particularly noticeable when the pedestrians are further away, as the mobilenet model doesn’t pick them up at all. We need to consider these factors when designing our tracker.
 
-![MobileNet](img/mobilenet.gif)
-![ResNet](img/resnet.gif)
+|![MobileNet](img/mobilenet.gif)|
+|:--:|
+|*MobileNet Detections*|
+
+|![ResNet](img/resnet.gif)|
+|:--:|
+|*ResNet Detections*|
 
 
 ### Evaluating Tradeoffs
@@ -209,13 +252,17 @@ The limitations of applying this demo to self-driving cars directly are as follo
 
 - In the example scenes, we used a stationary camera. In the real world, the car would be moving which would change how the pedestrians and camera are moving relative to one another. Depending on how fast the car is moving, this can complicate our tracking significantly.
 
-![Moving Camera](img/move.gif)
+|![Moving Camera](img/move.gif)|
+|:--:|
+|*Moving Camera Tracking*|
 
 - Tracking is only one of the first steps for the whole self-driving pipeline. From these tracks we need to predict what the pedestrians and other cars are going to do, and then plan our path through them. 
 
 - We ignored most of the appearance based metrics for tracking. Incorporating more appearance based methods would help with re-identifying objects returning from occlusion.
 
-![Optical Flow Seq 1](img/optflow_seq1.gif)
+|![Optical Flow Seq 1](img/optflow_seq1.gif)|
+|:--:|
+|*Optical Flow Example 2*|
  
 - We didn't use any deep learning in our tracking. If we use deep learning everything automatically gets better. This is only 50% a joke, [DeepSORT](https://github.com/nwojke/deep_sort).
 
