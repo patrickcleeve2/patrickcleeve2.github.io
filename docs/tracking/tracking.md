@@ -17,9 +17,9 @@ Most importantly for self-driving, tracking objects forms a basis for making pre
 
 For this post, we are going to use a couple of small example scenes of pedestrians crossing the road. The scene was collected using the [CARLA simulator](https://carla.org/). 
 
-![Sequence 0](img/seq0.gif)
+![Sequence 0](img/seq0.gif#center)*Sequence 1*
 
-![Sequence 1](img/seq1.gif)
+![Sequence 1](img/seq1.gif#center)*Sequence 0*
 
 To motivate the need for tracking, lets see the output of the object detector.
 
@@ -130,7 +130,8 @@ I will be using the [motpy](https://github.com/wmuron/motpy) package for trackin
 The following examples are done in real time using the default tracking parameters.
 
 ![FPS 10 Track 0](img/fps10_track0.gif)
-![FPS10 Track 2]](img/fps10_track1.gif)
+
+![FPS10 Track 1](img/fps10_track1.gif)
 
 We can see the benefit tracking brings, we are able to track the individual pedestrians even when they are occluded behind a pole, or each other. However, there are clearly some phantom tracks going on. In sequence one, after the person appears from behind the pole, two detections are shown. This is likely due to the tracker not registering the new detections and the previous track, and creating a new one instead without deregistering the old.
 
@@ -166,11 +167,12 @@ From the chart below, we can see that the pipeline time is dominated by the mode
 The initial detection model used had a ResNet backbone, which is an accurate but slower model. We can replace it with a mobilenet backbone, which is a model designed for mobile phones, so it is much faster, at the cost of some accuracy. From the chart below, we can see that this change alone almost doubles our speed. We have gone from processing at 10 fps (1 / 0.1) to around 20 fps (1 / 0.05) for tracking.
 
 ![Models Pipeline](img/models_pipeline.png)
+*Model Comparison*
 
-To get an intuitive understanding of how big a difference in speed this is, I am displaying the last five detections for each model. We can see how much closer together and tiger around the person the detections at 20 FPS are. For tracking, this means our tracker has less distance between detections, and has less uncertainty regarding prediction.
+To get an intuitive understanding of how big a difference in speed this is, I am displaying the last five detections for each model. We can see how much closer together and tighter around the person the detections at 20 FPS are. For tracking, this means our tracker has less distance between detections, and has less uncertainty regarding prediction.
 
 ![FPS10 Detections](img/fps10_det.gif)
-![FPS20 Detections](fps20_det.gif)
+![FPS20 Detections](img/fps20_det.gif)
 
 Now when we run our tracker at 20 FPS, without changing any other parameters, we get  a noticeable improvement in performance. 
 
@@ -195,25 +197,25 @@ For real time tracking, a simple, fast tracker usually wins over a slower more s
 ## Limitations
 The limitations of applying this demo to self-driving cars directly are as follows:
 
-We have used a single class tracker, with only a single class in our images (pedestrians). In order to incorporate this into a self-driving car, we would need to make our tracker multi-class, which would make it slightly more complex.
+- We have used a single class tracker, with only a single class in our images (pedestrians). In order to incorporate this into a self-driving car, we would need to make our tracker multi-class, which would make it slightly more complex.
 
-Our detections and tracks are only in 2D (image bounding boxes). In order to incorporate these tracks into a planning system, we would need to convert them to 3-dimensions. Tracking in 3D is not that much more complicated than 2D, as we just add z-values to our bounding boxes. However, getting fast, and accurate 3D detections is much more challenging.
+- Our detections and tracks are only in 2D (image bounding boxes). In order to incorporate these tracks into a planning system, we would need to convert them to 3-dimensions. Tracking in 3D is not that much more complicated than 2D, as we just add z-values to our bounding boxes. However, getting fast, and accurate 3D detections is much more challenging.
 
-The 'fast' detection model we have used is actually pretty slow, as it is a two-stage detector. If we were to change to a single stage detector designed for speed such as YOLO, or SSD, we might be able to use a more complex tracker and still maintain our 20 FPS benchmark.
+- The 'fast' detection model we have used is actually pretty slow, as it is a two-stage detector. If we were to change to a single stage detector designed for speed such as YOLO, or SSD, we might be able to use a more complex tracker and still maintain our 20 FPS benchmark.
 
-In the example scenes, we used a stationary camera. In the real world, the car would be moving which would change how the pedestrians and camera are moving relative to one another. Depending on how fast the car is moving, this can complicate our tracking significantly.
+- In the example scenes, we used a stationary camera. In the real world, the car would be moving which would change how the pedestrians and camera are moving relative to one another. Depending on how fast the car is moving, this can complicate our tracking significantly.
 
 ![Moving Camera](img/move.gif)
 
-Tracking is only one of the first steps for the whole self-driving pipeline. From these tracks we need to predict what the pedestrians and other cars are going to do, and then plan our path through them. 
+- Tracking is only one of the first steps for the whole self-driving pipeline. From these tracks we need to predict what the pedestrians and other cars are going to do, and then plan our path through them. 
 
-We ignored most of the appearance based metrics for tracking.
+- We ignored most of the appearance based metrics for tracking. Incorporating more appearance based methods would help with re-identifying objects returning from occlusion.
 
 ![Optical Flow Seq 1](img/optflow_seq1.gif)
  
-We didn't use any deep learning in our tracking. If we use deep learning everything automatically gets better. This is only 50% a joke, [DeepSORT](https://github.com/nwojke/deep_sort).
+- We didn't use any deep learning in our tracking. If we use deep learning everything automatically gets better. This is only 50% a joke, [DeepSORT](https://github.com/nwojke/deep_sort).
 
-We skipped over tuning any of the other parameters of the tracker, in favour of discussing the speed. There are many hyperparameters that we can adjust in order to improve not only the tracker, but the detections as well. 
+- We skipped over tuning any of the other parameters of the tracker, in favour of discussing the speed. There are many hyperparameters that we can adjust in order to improve not only the tracker, but the detections as well. 
 
 ## Conclusion
 Tracking is a useful technique for determining the behaviour of other agents on the road. For self driving applications, a robust, real time tracking pipeline is required. We’ve seen that for real time problems, faster, simpler tracking can work better than slower more complex methods.  Tracking is a building block for a prediction system, in order to understand what pedestrians and vehicles will do next.  
@@ -241,3 +243,9 @@ Tracking is a useful technique for determining the behaviour of other agents on 
 - [yehengchen/Object-Detection-and-Tracking: Object Detection and Multi-Object Tracking](https://github.com/yehengchen/Object-Detection-and-Tracking)
 - [abewley/sort: Simple, online, and realtime tracking of multiple objects in a video sequence.](https://github.com/abewley/sort)
 - [wmuron/motpy: Library for tracking-by-detection multi object tracking implemented in python](https://github.com/wmuron/motpy)
+
+
+## TODO
+- resize gifs
+- image captions
+- edit
