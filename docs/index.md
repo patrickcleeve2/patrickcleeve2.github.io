@@ -3,7 +3,7 @@
 
 hello
 
-[link_test](docs/page.md)
+[link_test](page.md)
 
-[tracking](docs/tracking/tracking.md)
+[tracking](tracking/tracking.md)
 
