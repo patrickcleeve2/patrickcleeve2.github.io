@@ -139,8 +139,7 @@ Example Cost Matrix
 #### **Association**
 Once the cost matrix is constructed, we need to find the best way to match detections and tracks to minimise the overall score. The most common method is to use an [optimisation method](https://en.wikipedia.org/wiki/Hungarian_algorithm#the_problem), to solve the problem. Once the association is complete, each detection is matched to a track, creates a new track, or is discarded, and our tracking algorithm is ready to process the next frame. 
 
-|![Association](img/association.gif)
-|
+|![Association](img/association.gif)|
 |:--:|
 |*Association Problem*|
 
