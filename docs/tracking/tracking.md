@@ -17,9 +17,13 @@ Most importantly for self-driving, tracking objects forms a basis for making pre
 
 For this post, we are going to use a couple of small example scenes of pedestrians crossing the road. The scene was collected using the [CARLA simulator](https://carla.org/). 
 
-![Sequence 0](img/seq0.gif#center)*Sequence 1*
+|![Sequence 0](img/seq0.gif) |
+|:--:|
+|*Sequence 1*|
 
-![Sequence 1](img/seq1.gif#center)*Sequence 0*
+|![Sequence 1](img/seq1.gif)|
+| :--: |
+|*Sequence 0*|
 
 To motivate the need for tracking, lets see the output of the object detector.
 
