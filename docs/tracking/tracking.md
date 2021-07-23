@@ -122,6 +122,69 @@ Once the cost matrix is constructed, we need to find the best way to match detec
 
 ![Association](img/association.gif)
 
+## Tracking Example
+Now that we have an understanding of how tracking algorithms work, we can see how tracking works in practice.  
+
+I will be using the [motpy](https://github.com/wmuron/motpy) package for tracking. Motpy provides a flexible, and fast tracker for tracking by detection, using most of the features discussed above. For the detection models, I am using the out of the box PyTorch vision models for detections, and ROS to interact with CARLA. The rest of the code used for the demo is available here: https://github.com/patrickcleeve2/perception 
+
+The following examples are done in real time using the default tracking parameters.
+
+![FPS 10 Track 0](img/fps10_track0.gif)
+![FPS10 Track 2]](img/fps10_track1.gif)
+
+We can see the benefit tracking brings, we are able to track the individual pedestrians even when they are occluded behind a pole, or each other. However, there are clearly some phantom tracks going on. In sequence one, after the person appears from behind the pole, two detections are shown. This is likely due to the tracker not registering the new detections and the previous track, and creating a new one instead without deregistering the old.
+
+### Performance
+There are a number of different things we can tune to try to improve the performance of the tracker:
+
+- Staleness: the amount of time to retain a track without a matching detection. This should deregister old tracks faster, and possibly help with occlusion. Ideally we want to maintain the same track through occlusion.
+- Motion model: the type (or order) of the motion model we are going to use (constant velocity, acceleration, etc). This will help us better model the motion of our pedestrians.
+- Kalman Filter parameters: the [noise and covariance parameters](https://en.wikipedia.org/wiki/Kalman_filter#Technical_description_and_context) of the filter. These will help us better model the system as a whole. 
+- Appearance matching: we can enable feature similarity matching to help match the same objects and filter out false positive detections.
+- Many more…
+
+However, there is something simpler I would like to try first, running the tracker faster. 
+
+### The Need for Speed
+The idea behind running the tracker faster is that the less time there is between frames, the closer our detections will be, the less uncertainty there is about our motion predictions and hopefully this will result in smoother performance. 
+
+**Bottleneck**
+
+In order to run our tracker faster, we need to understand what the bottleneck is in our tracking pipeline. For this demo, our pipeline has four main steps:
+- Inference: Running the image through the detection model
+- Tracking: Running the detections through the tracking algorithm
+- Drawing: Drawing the tracking bounding boxes on the image
+- Publishing: Publishing the image back into the image stream
+The Drawing and Publishing steps are just for viewing the demo, so we will ignore them. 
+
+![Tracking Pipeline](img/tracking_pipeline.png)
+
+From the chart below, we can see that the pipeline time is dominated by the model’s inference, with tracking being a very small proportion of the overall. Therefore, if we want to improve our tracking speed we need to run a faster model.   
+
+![Resnet Pipeline](img/resnet_pipeline.png)
+
+The initial detection model used had a ResNet backbone, which is an accurate but slower model. We can replace it with a mobilenet backbone, which is a model designed for mobile phones, so it is much faster, at the cost of some accuracy. From the chart below, we can see that this change alone almost doubles our speed. We have gone from processing at 10 fps (1 / 0.1) to around 20 fps (1 / 0.05) for tracking.
+
+![Models Pipeline](img/models_pipeline.png)
+
+To get an intuitive understanding of how big a difference in speed this is, I am displaying the last five detections for each model. We can see how much closer together and tiger around the person the detections at 20 FPS are. For tracking, this means our tracker has less distance between detections, and has less uncertainty regarding prediction.
+
+![FPS10 Detections](img/fps10_det.gif)
+![FPS20 Detections](fps20_det.gif)
+
+Now when we run our tracker at 20 FPS, without changing any other parameters, we get  a noticeable improvement in performance. 
+
+![FPS20 Track 0](img/fps20_track0.gif)
+![FPS20 Track 1](img/fps20_track1.gif)
+
+There are still some obvious issues with the tracker (e.g. phantom tracks), but we have managed to improve the smoothness overall. However, there are some downsides to using a faster inference model that we need to discuss.
+
+In general, the faster the model, the lower the accuracy. We can see this pattern in the sequences below. The mobilnet model misses a lot more detections than the resnet model. This is particularly noticeable when the pedestrians are further away, as the mobilenet model doesn’t pick them up at all. We need to consider these factors when designing our tracker.
+
+![MobileNet](img/mobilenet.gif)
+![ResNet](img/resnet.gif)
+
+
 
 ## Reference
 **Detection**
