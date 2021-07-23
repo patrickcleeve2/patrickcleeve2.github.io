@@ -204,11 +204,11 @@ To get an intuitive understanding of how big a difference in speed this is, I am
 
 |![FPS10 Detections](img/fps10_det.gif)|
 |:--:|
-|*10 FPS Sequence 1 Detections*|
+|*10 FPS Detections*|
 
 |![FPS20 Detections](img/fps20_det.gif)|
 |:--:|
-|*10 FPS Sequence 2 Detections*|
+|*20 FPS Detections*|
 
 Now when we run our tracker at 20 FPS, without changing any other parameters, we get  a noticeable improvement in performance. 
 
