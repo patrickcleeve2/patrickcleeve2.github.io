@@ -293,9 +293,3 @@ Tracking is a useful technique for determining the behaviour of other agents on 
 - [yehengchen/Object-Detection-and-Tracking: Object Detection and Multi-Object Tracking](https://github.com/yehengchen/Object-Detection-and-Tracking)
 - [abewley/sort: Simple, online, and realtime tracking of multiple objects in a video sequence.](https://github.com/abewley/sort)
 - [wmuron/motpy: Library for tracking-by-detection multi object tracking implemented in python](https://github.com/wmuron/motpy)
-
-
-## TODO
-- resize gifs
-- image captions
-- edit
