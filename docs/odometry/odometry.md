@@ -208,7 +208,7 @@ Odometry calculations are particularly sensitive to sensor quality due to the ac
 **Wheel Encoders**
 - [Location using Wheel Encoder Data](https://robotics.stackexchange.com/questions/9171/plotting-location-using-wheel-encoder-data)
 - [Arduino Wheel Encoder Odometry](http://andrewjkramer.net/arduino-odometry/) 
-- [Arduino Wheel Encoder Repository](https://github.com/EwingKang/Simple-ROS-Arduino-odometry#encoder)
+- [Arduino Wheel Encoder Repository](https://github.com/EwingKang/Simple-ROS-Arduino-odometry)
 
 **IMU Odometry**
 - [ROS Robot Localisation Package](http://docs.ros.org/en/melodic/api/robot_localization/html/index.html)
