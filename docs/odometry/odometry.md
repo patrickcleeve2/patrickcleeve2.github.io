@@ -19,7 +19,7 @@ Position refers to the displacement of the vehicle along any of the three axes (
 Orientation refers to the rotation of the vehicle around the three axes (roll, pitch, yaw). 
 
 This frame is often used to describe any object with these six degrees of freedom.
-|![Six Degree of Freedom axes](https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/6DOF.svg/1024px-6DOF.svg.png)  |
+|![Six Degree of Freedom axes](https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/6DOF.svg/1024px-6DOF.svg.png)|
 |:--:|
 |*6-Degrees of Freedom Axes*|
 
@@ -29,7 +29,7 @@ Changes in position are referred to as translations, while changes in orientatio
 |:--:|
 |*Position and Orientation*|
 
-NB: both position and orientation are 3-dimensional, but it is easier to visualize and understand by simplifying to 2-dimensions (birdseye view). Also, cars can only travel in one direction (forward/backwards), and mainly rotate about a single axis (yaw, z-axis), so the simplification is appropriate. 
+NB: both position and orientation are 3-dimensional, but it is easier to visualize and understand by simplifying to 2-dimensions (birdseye view). Since cars can only travel in one direction (forward/backwards), and mainly rotate about a single axis (yaw, z-axis), so the simplification is appropriate. 
 
 ### Reference Frames
 If the car starts in different positions, our reference will be different each time. We become limited to a fixed location. We need a global reference if we want to be able to navigate. A global reference point can be arbitrarily chosen such as a GPS location. We then need some way of transforming our odometry data into this global reference’s coordinate system.
@@ -90,9 +90,9 @@ However, because we don’t have any external reference for our odometry, these 
 Similar to encoders an IMU is a dead reckoning sensor, but can be much more accurate than wheel encoders. 
 
 An imu is a combination sensor, usually consisting of an accelerometer, gyroscope and magnetometer. 
-An accelerometer measures the linear acceleration along three axes (x, y, z). 
-A gyroscope measures the angular velocity (rate of rotation) about three axes (x, y, z). 
-A magnetometer measures the magnitude and direction of the magnetic field along three axes (x, y, z).
+- An accelerometer measures the linear acceleration along three axes (x, y, z). 
+- A gyroscope measures the angular velocity (rate of rotation) about three axes (x, y, z). 
+- A magnetometer measures the magnitude and direction of the magnetic field along three axes (x, y, z).
 
 We can combine these three measurements to calculate our position and orientation over time. 
 
@@ -124,7 +124,7 @@ https://nitinjsanket.github.io/tutorials/attitudeest/madgwick).
 
 You might have noticed that these calculations are subject to the same type of error accumulation as wheel encoders. However, IMUs can be made much more accurate than wheel encoders which allow them to minimise the errors that accumulate. Although this accuracy comes with a more expensive price tag, for different applications (e.g. rockets) using a very expensive IMU might be worth it. 
 
-[IMU Price Comparison](https://www.vectornav.com/resources/inertial-navigation-articles/what-is-an-inertial-measurement-unit-imu) 
+- [IMU Price Comparison](https://www.vectornav.com/resources/inertial-navigation-articles/what-is-an-inertial-measurement-unit-imu) 
 
 For self driving, we already have access to a number of different sensors on the car for other purposes. We have cameras for vision, gps for navigation, wheel encoder / tachometer for speed and usually a lidar. Therefore, it probably makes more sense to not spend more money on an expensive IMU just for odometry, and to try to just make use of our existing sensor suite. We will discuss fusing different sensors together later. 
 
@@ -132,7 +132,7 @@ For self driving, we already have access to a number of different sensors on the
 
 GPS is a navigation system that uses satellites to calculate our position on Earth. GPS works by comparing the timing of messages received from different satellites to determine our position (trilateration). 
 
-[How does GPS Work?](https://www.youtube.com/watch?v=6m0xGwkYYy0)
+- [How does GPS Work?](https://www.youtube.com/watch?v=6m0xGwkYYy0)
 
 The GPS information we are interested in for odometry is usually called a fix; latitude, longitude, altitude. We can also calculate speed and heading from these measurements. In order to use GPS data, we need to transform the latitude and longitude into our odometry’s coordinate system. In this case, it makes sense to define a fixed initial odometry coordinate based on a fixed gps location, and transform our data based on that. 
 
@@ -140,7 +140,7 @@ The GPS information we are interested in for odometry is usually called a fix; l
 |:--:|
 |*GPS Frame*|
 
-An example of this transformation can be found here: https://github.com/bsb808/geonav_transform 
+An example of this transformation can be found here: [GeoNav Transform Package](https://github.com/bsb808/geonav_transform) 
 
 Although GPS is a very complicated system, it is quite easy to work with if we only want to get position data. However, there are significant limitations to using GPS for odometry. In general, the data has an accuracy of around 2m, which is suitable for catching an Uber or navigating, but not for positioning a car on the road. This accuracy only decays further if the signal is blocked by buildings or trees, or can be completely lost in a tunnel.   
 
@@ -162,7 +162,7 @@ We compare the current scan to the previous. We match the points between scans a
 
 Matching scans at high frequency can be computationally difficult, but provides very good accuracy (assuming there are enough features to match). However, scan matching requires a lidar that can be an expensive component. Lidar scan matching is the most widely used method for localizing to a predefined map. Maps can provide a lot of additional information without having to calculate it in real-time, such as lane lines or traffic light locations. We will discuss mapping in another post. 
 
-[Scan Matching Tutorial](https://www.youtube.com/watch?v=LETPf6eoyYg)
+- [Scan Matching Tutorial](https://www.youtube.com/watch?v=LETPf6eoyYg)
 
 
 #### Visual Odometry
@@ -179,7 +179,7 @@ Can be very complicated to track image features between frames, and calculate th
 |:--:|
 |*Feature Matching*|
 
-As cameras are cheaper than lidar, visual odometry offers a more scalable approach to odometry that can be used across different robotic platforms. Visual odometry is a very complicated topic, and requires a lot of background knowledge to start with. One of the most common starting points is to use the KiTTi dataset to test out different approaches. As KiTTi itself can be confusing to start, this video series provides a great introduction to the problem and the dataset: [Visual Odometry and KiTTI Tutorial](https://www.youtube.com/watch?v=SXW0CplaTTQ) 
+As cameras are cheaper than lidar, visual odometry offers a more scalable approach that can be used across different robotic platforms. Visual odometry is a very complicated topic, and requires a lot of background knowledge to start with. One of the most common starting points is to use the KiTTi dataset to test out different approaches. As KiTTi itself can be confusing to start, this video series provides a great introduction to the problem and the dataset: [Visual Odometry and KiTTI Tutorial](https://www.youtube.com/watch?v=SXW0CplaTTQ) 
 
 ### Fusion
 As discussed, every odometry method has challenges and limitations. We can combine different estimates using sensor fusion methods. These can provide a more accurate estimate overall, and allows different sensors to cover the weaknesses of the others. For example, when travelling through a tunnel where gps is not available, we would rely more on other sensors.  
