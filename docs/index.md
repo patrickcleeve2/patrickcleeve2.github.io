@@ -1,9 +1,5 @@
-# test
+# Blogs
 
+## [Tracking](tracking/tracking.md)
 
-hello
-
-[link_test](page.md)
-
-[tracking](tracking/tracking.md)
-
+## [Odometry](odometry/odometry.md)
