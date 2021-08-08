@@ -34,7 +34,11 @@ NB: both position and orientation are 3-dimensional, but it is easier to visuali
 ### Reference Frames
 If the car starts in different positions, our reference will be different each time. We become limited to a fixed location. We need a global reference if we want to be able to navigate. A global reference point can be arbitrarily chosen such as a GPS location. We then need some way of transforming our odometry data into this global reference’s coordinate system.
  
-### TODO: Viz: global reference frame (show carla global map reference)
+|![carla_frames](img/carla_frames.png) |
+|:--:|
+|*CARLA Simulator Reference Frames*|
+
+
 
 In addition, as shown above we need to transform our odometry sensor data (such as an IMU or GPS), into a common reference on the vehicle. As you can see there ends up being a large number of different coordinate systems, some which travel along with the vehicle, and some which are fixed in space. 
 
