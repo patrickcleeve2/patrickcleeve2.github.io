@@ -219,6 +219,6 @@ Although these problems are significant, they aren’t insurmountable. So far, w
 - [Berkeley Deep RL - DAGGER](https://rll.berkeley.edu/deeprlcourse-fa15/docs/2015.10.5.dagger.pdf)
 - [A Reduction of Imitation Learning and Structured Prediction
 to No-Regret Online Learning (DAGGER Paper)](https://www.ri.cmu.edu/pub_files/2011/4/Ross-AISTATS11-NoRegret.pdf)  
-[RL Imitation Learning - Johnathan Hui](https://jonathan-hui.medium.com/rl-imitation-learning-ac28116c02fc)  
+- [RL Imitation Learning - Johnathan Hui](https://jonathan-hui.medium.com/rl-imitation-learning-ac28116c02fc)  
 - [Berkeley Deep RL Course](http://rail.eecs.berkeley.edu/deeprlcourse/)  
 
