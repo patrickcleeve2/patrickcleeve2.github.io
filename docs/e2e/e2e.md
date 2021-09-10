@@ -145,6 +145,10 @@ The model works pretty well, as after only 2 minutes of data collection we can k
 
 However... It only works on this specific part of the road. 
 
+|[![training_data](https://img.youtube.com/vi/nCRQ0S9GJz4/0.jpg)](https://youtu.be/nCRQ0S9GJz4)|
+|:--:|
+|*Trying to Imitate on Unknown Roads*|
+
 When testing out the model on other areas of the road, it failed pretty miserably. On the freeway, it went immediately off the road, and even on similar looking (to a human) curved roads it went off regularly. We could likely improve the performance by collecting more recovery driving on these areas, and building up our dataset, but there are some reasons why this will only get more difficult the longer the road becomes. 
 
 As a first step, we can try to look at our training data to see why we might be struggling in these sections. 
