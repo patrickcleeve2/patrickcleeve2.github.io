@@ -158,32 +158,32 @@ As a first step, we can try to look at our training data to see why we might be 
 |:--:|
 |*Training Data*|
 
-Looking at the playback of the training data, it is pretty janky and I’m not a very good driver. In my defence it is pretty hard to drive in the simulator car accelerates very quickly and the steering snaps back to zero when not pressed. This results in most of the steering commands being very close to zero (even though we are turning right most of the time). 
+Looking at the playback of the training data, it is pretty janky and I’m not a very good driver. In my defence it is pretty hard to drive in the simulator as the car accelerates very quickly and the steering snaps back to zero when not pressed. This results in most of the steering commands being very close to zero (even though we are turning most of the time). 
 
 ![training_data_histogram](img/histogram.png)
 
 Even though we did collect driving going both ways (left turn and right turn), there is an imbalance turning right, which skews the data. Whilst it doesn’t matter too much for this example, it will bias our model towards turning right, particularly when it encounters situations it hasn't seen before (see the failure video above).
 
-We could continue to collect more training data, and retrain our model. Theoretically, if we kept going we might eventually generalise, but we would need a much bigger model, and A LOT more time. However, from experience if we keep going down this path we are going to get very diminishing returns, and our model will struggle to imitate us as expected. 
+We could continue to collect more training data, and retrain our model. Theoretically, if we kept going we might eventually generalise, but we would need a much bigger model, and **A LOT** more time. However, from experience if we keep going down this path we are going to get very diminishing returns, and our model will struggle to imitate us as expected. 
 
-Why didn't this work as well as expected?
+## Why didn't this work as well as expected?
 We have tried to turn our self-driving problem into a supervised learning problem. In comparison to training a similar sized classifier (e.g. to classify images as cats or dogs), the model and amount of data should have been more than enough. So what went wrong?
 
 The problem we are running into is well known in imitation learning. Driving a car is a sequential decision making process, meaning our actions (how much we steer) influence the state we end up in (where the car is). This transition is often drawn as follows, and is modelled as a [Markov Decision Process](https://en.wikipedia.org/wiki/Markov_decision_process).
 
-![Markov Decision Process](https://images.deepai.org/django-summernote/2019-03-19/c8c9f96b-cc21-4d33-8b37-cb810f599e6e.png)|
+|![Markov Decision Process](https://images.deepai.org/django-summernote/2019-03-19/c8c9f96b-cc21-4d33-8b37-cb810f599e6e.png)|
 |:--:|
 |*State -> Action -> State’*|
 
 Practically, this means if our model makes even a small mistake, we will end up in a different state than we saw in training, which will likely cause us to make an even bigger mistake, repeating the cycle. In comparison to a classifier, making a mistake on one image has no impact on classifying the next image. 
 
-![baseline_path](img/path_baseline.png)|
+|![baseline_path](img/path_baseline.png)|
 |:--:|
 |*Baseline Tightrope*|
 
 An explanation that has always clicked with me is to imagine the data we collected for training as a tightrope. If we can exactly match this tightrope (distribution), we can stay on course. But as time goes on, our probability of making a single mistake grows, and all it takes is one mistake to fall off the tightrope.
 
-![tightrope_diagram](img/tightrope.png)|
+|![tightrope_diagram](img/tightrope.png)|
 |:--:|
 |*Tightrope Diagram - [Berkeley DeepRL](http://rail.eecs.berkeley.edu/deeprlcourse/static/slides/lec-2.pdf)*|
  
@@ -191,7 +191,7 @@ This sequential decision making problem is going to ruin our day for a long time
 
 The ‘recovery’ data we collected is more formally a kind of DAgger (Dataset Aggregation) algorithm. Conceptually, we can think of this as expanding our tightrope, making it hard to fall off. The more DAgger data we collect, the more reliable our model should become. 
 
-![dagger_path](img/dagger_tightrope.gif)|
+|![dagger_path](img/dagger_tightrope.gif)|
 |:--:|
 |*DAGGER Tightrope*|
 
@@ -202,7 +202,7 @@ However, collecting this data ourselves is time consuming or expensive. So we ne
 
 Even with huge amounts of data, we would still have to be careful falling off the tightrope. The way we have structured the problem (supervised learning) makes our model very brittle to experiences outside of its own training data. Collecting more data to recover from every mistake would quickly become overwhelming, so we are going to have to restructure the problem so our model is able to learn from its own mistakes. 
 
-![big_path](img/big_path.png)|
+|![big_path](img/big_path.png)|
 |:--:|
 |*Is it practical to cover the whole area?*|
 
