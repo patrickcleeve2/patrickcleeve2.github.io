@@ -1,5 +1,7 @@
 # Blogs
 
+
+# Classic Approach
 ## [Tracking](tracking/tracking.md)
 
 ## [Odometry](odometry/odometry.md)
@@ -10,4 +12,7 @@
 ## [Control](control/control.md)
 
 
+
+# End to End Learning
 ## [End To End Learning](e2e/e2e.md)
+## [Temporal Models](temporal/temporal.md)
